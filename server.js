@@ -10,9 +10,36 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+// Configure allowed origins for CORS
+// Normalize URLs by removing trailing slashes (HTTP origin headers don't include them)
+const normalizeUrl = (url) => url ? url.replace(/\/$/, '') : null;
+
+const allowedOrigins = [
+  normalizeUrl(process.env.FRONTEND_URL),      // https://gaiapac.ae
+  normalizeUrl(process.env.FRONTEND2_URL),    // https://www.gaiapac.ae
+  'https://gaiapac.ae',                       // Fallback
+  'https://www.gaiapac.ae',                   // Fallback
+  'http://localhost:5173',                   // Local development
+  'http://localhost:3000',                    // Local development
+].filter(Boolean); // Remove any undefined/null values
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if the origin is in the allowed list
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      // Log the blocked origin for debugging
+      console.log(`🚫 CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions));
 app.use(express.json());
