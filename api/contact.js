@@ -56,10 +56,18 @@ export default async function handler(req, res) {
     // Check if Supabase client is initialized
     if (!supabase) {
       console.error('❌ Supabase client not initialized. Check environment variables.');
+      console.error('Environment check:', {
+        hasUrl: !!(process.env.SUPABASE_URL || process.env.gaiapaac_SUPABASE_URL),
+        hasKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.gaiapaac_SUPABASE_SERVICE_ROLE_KEY),
+        SUPABASE_URL: process.env.SUPABASE_URL ? 'set' : 'missing',
+        gaiapaac_SUPABASE_URL: process.env.gaiapaac_SUPABASE_URL ? 'set' : 'missing',
+        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'missing',
+        gaiapaac_SUPABASE_SERVICE_ROLE_KEY: process.env.gaiapaac_SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'missing'
+      });
       return res.status(500).json({
         success: false,
         message: 'Server configuration error. Please contact support.',
-        error: 'Supabase client not initialized'
+        error: process.env.NODE_ENV === 'development' ? 'Supabase client not initialized - check environment variables' : undefined
       });
     }
     
@@ -103,11 +111,21 @@ export default async function handler(req, res) {
       .select();
 
     if (error) {
-      console.error('Supabase error:', error);
+      console.error('❌ Supabase error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       return res.status(500).json({
         success: false,
         message: 'An error occurred while saving your message. Please try again later.',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? {
+          message: error.message,
+          code: error.code,
+          details: error.details
+        } : undefined
       });
     }
 
@@ -132,11 +150,15 @@ export default async function handler(req, res) {
       }
     });
   } catch (error) {
-    console.error('Error processing contact form:', error);
+    console.error('❌ Error processing contact form:', error);
+    console.error('Error stack:', error.stack);
     return res.status(500).json({
       success: false,
       message: 'An error occurred while sending your message. Please try again later.',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? {
+        message: error.message,
+        stack: error.stack
+      } : undefined
     });
   }
 }

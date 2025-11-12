@@ -9,18 +9,21 @@ try {
 }
 
 // Validate required environment variables
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Support both standard and prefixed naming conventions
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.gaiapaac_SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.gaiapaac_SUPABASE_SERVICE_ROLE_KEY;
 
 // Log warnings if environment variables are missing (but don't throw)
 if (!SUPABASE_URL) {
   console.error('❌ Missing SUPABASE_URL in environment variables');
-  console.error('⚠️  Please set SUPABASE_URL in your Vercel project settings under Environment Variables');
+  console.error('⚠️  Please set SUPABASE_URL or gaiapaac_SUPABASE_URL in your Vercel project settings under Environment Variables');
+  console.error('⚠️  Checked for: SUPABASE_URL, gaiapaac_SUPABASE_URL');
 }
 
 if (!SUPABASE_SERVICE_ROLE_KEY) {
   console.error('❌ Missing SUPABASE_SERVICE_ROLE_KEY in environment variables');
-  console.error('⚠️  Please set SUPABASE_SERVICE_ROLE_KEY in your Vercel project settings under Environment Variables');
+  console.error('⚠️  Please set SUPABASE_SERVICE_ROLE_KEY or gaiapaac_SUPABASE_SERVICE_ROLE_KEY in your Vercel project settings under Environment Variables');
+  console.error('⚠️  Checked for: SUPABASE_SERVICE_ROLE_KEY, gaiapaac_SUPABASE_SERVICE_ROLE_KEY');
 }
 
 // Create Supabase client with service role key for server-side operations
