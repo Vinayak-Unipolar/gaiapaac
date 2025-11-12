@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/contact",
+      "destination": "/api/contact"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/",
+      "destination": "/api/index"
+    }
+  ]
+}

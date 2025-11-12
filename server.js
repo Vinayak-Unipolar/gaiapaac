@@ -18,6 +18,18 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Gaiapac Backend API',
+    version: '1.0.0',
+    endpoints: {
+      contact: '/api/contact (POST)',
+      health: '/api/health (GET)'
+    }
+  });
+});
+
 // API Routes
 app.use('/api', apiRoutes);
 
